@@ -14,12 +14,14 @@
 
 <!-- scitex-badges:start -->
 <p align="center">
-  <a href="https://pypi.org/project/scitex-dict/"><img src="https://img.shields.io/pypi/v/scitex-dict.svg" alt="PyPI"></a>
-  <a href="https://pypi.org/project/scitex-dict/"><img src="https://img.shields.io/pypi/pyversions/scitex-dict.svg" alt="Python"></a>
-  <a href="https://github.com/ywatanabe1989/scitex-dict/actions/workflows/test.yml"><img src="https://github.com/ywatanabe1989/scitex-dict/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
-  <a href="https://codecov.io/gh/ywatanabe1989/scitex-dict"><img src="https://codecov.io/gh/ywatanabe1989/scitex-dict/graph/badge.svg" alt="Coverage"></a>
-  <a href="https://scitex-dict.readthedocs.io/en/latest/"><img src="https://readthedocs.org/projects/scitex-dict/badge/?version=latest" alt="Docs"></a>
-  <a href="https://www.gnu.org/licenses/agpl-3.0"><img src="https://img.shields.io/badge/license-AGPL_v3-blue.svg" alt="License: AGPL v3"></a>
+  <a href="https://pypi.org/project/scitex-dict/"><img src="https://img.shields.io/pypi/v/scitex-dict?label=pypi" alt="pypi"></a>
+  <a href="https://pypi.org/project/scitex-dict/"><img src="https://img.shields.io/pypi/pyversions/scitex-dict?label=python" alt="python"></a>
+  <a href="https://scitex-dict.readthedocs.io/en/latest/"><img src="https://img.shields.io/readthedocs/scitex-dict?label=docs" alt="docs"></a>
+</p>
+<p align="center">
+  <a href="https://github.com/ywatanabe1989/scitex-dict/actions/workflows/pytest-matrix-on-ubuntu-py3-11-3-12-3-13.yml"><img src="https://img.shields.io/github/actions/workflow/status/ywatanabe1989/scitex-dict/pytest-matrix-on-ubuntu-py3-11-3-12-3-13.yml?branch=develop&label=tests" alt="tests"></a>
+  <a href="https://github.com/ywatanabe1989/scitex-dict/actions/workflows/import-smoke-on-ubuntu-py3-12.yml"><img src="https://img.shields.io/github/actions/workflow/status/ywatanabe1989/scitex-dict/import-smoke-on-ubuntu-py3-12.yml?branch=develop&label=install-check" alt="install-check"></a>
+  <a href="https://codecov.io/gh/ywatanabe1989/scitex-dict/branch/develop/graph/badge.svg"><img src="https://img.shields.io/codecov/c/github/ywatanabe1989/scitex-dict/develop?label=cov" alt="cov"></a>
 </p>
 <!-- scitex-badges:end -->
 
@@ -30,25 +32,75 @@
 | # | Problem | Solution |
 |---|---------|----------|
 | 1 | **YAML config access ergonomics** — `CONFIG["MODEL"]["hidden_size"]` vs `CONFIG.MODEL.hidden_size` matters in a notebook | **`DotDict`** — attribute-access `dict` subclass with recursive `.x.y.z`; works as a drop-in for the umpteen competing alternatives (addict, easydict, box, dotmap) |
-| 2 | **Merging configs silently overwrites** — `{**a, **b}` on duplicate keys loses information | **`safe_merge`** — duplicate keys raise; `flatten` turns nested dicts into dotted-key single-level for logging/CSV |
+| 2 | **Overwrites** — merges lose info on dup keys. | **`safe_merge`** — duplicate keys raise; `flatten` turns nested dicts into dotted-key single-level for logging/CSV |
+
+## Quick Start
+
+```python
+from scitex_dict import DotDict, safe_merge
+
+cfg = DotDict({"model": {"lr": 0.001, "epochs": 100}})
+print(cfg.model.lr)              # 0.001
+
+merged = safe_merge({"a": 1}, {"b": 2})
+```
+
+## Demo
+
+```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 20, 'rankSpacing': 40, 'curve': 'linear'}, 'themeVariables': {'fontSize': '12px'}}}%%
+flowchart LR
+    YAML[YAML config] --> DD[DotDict]
+    DD -->|cfg.model.lr| Code[Your code]
+    A[dict A] --> SM[safe_merge]
+    B[dict B] --> SM
+    SM --> Merged[merged dict]
+```
+
+<p align="center"><sub><b>Figure 1.</b> Config access and safe merge flow.</sub></p>
 
 ## Installation
 
 ```bash
-pip install scitex-dict
+uv pip install "scitex-dict[all]"
 ```
+
+<details>
+<summary><b>Per-module extras</b></summary>
+
+<br>
+
+| Extra | Pulls in |
+|---|---|
+| `dev` | pytest, sphinx toolchain |
+| `all` | dev (recommended) |
+
+```bash
+uv pip install -e ".[dev]"  # editable install
+```
+
+</details>
 
 ## Architecture
 
+### 1. Attribute access
+
+`DotDict` wraps nested dicts for dotted access while staying a real dict.
+
+### 2. Merge and flatten
+
+`safe_merge` raises on duplicates and `flatten` emits dotted-key views for logging.
+
+```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 20, 'rankSpacing': 40, 'curve': 'linear'}, 'themeVariables': {'fontSize': '12px'}}}%%
+flowchart LR
+    DOT[DotDict] --> USE[attribute access]
+    MERGE[safe_merge] --> FLAT[flatten]
+    FLAT --> OUT[loggable dicts]
+    USE --> OUT
 ```
-scitex-dict/
-├── src/scitex_dict/
-│   ├── _DotDict.py        # attribute-access dict subclass
-│   ├── _safe_merge.py     # raises on duplicate keys
-│   ├── _flatten.py        # nested → dotted-key
-│   └── _listed_dict.py    # default-list dict factory
-└── tests/
-```
+
+<p align="center"><sub><b>Figure 2.</b> Module collaboration from dicts to loggable outputs.</sub></p>
 
 ## 1 Interfaces
 
@@ -78,28 +130,6 @@ to_str({"a": 1, "b": 2})
 ```
 
 </details>
-
-## Demo
-
-```mermaid
-flowchart LR
-    YAML[YAML config] --> DD[DotDict]
-    DD -->|cfg.model.lr| Code[Your code]
-    A[dict A] --> SM[safe_merge]
-    B[dict B] --> SM
-    SM --> Merged[merged dict]
-```
-
-## Quick Start
-
-```python
-from scitex_dict import DotDict, safe_merge
-
-cfg = DotDict({"model": {"lr": 0.001, "epochs": 100}})
-print(cfg.model.lr)              # 0.001
-
-merged = safe_merge({"a": 1}, {"b": 2})
-```
 
 ## Part of SciTeX
 

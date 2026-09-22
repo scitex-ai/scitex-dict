@@ -45,13 +45,15 @@ classifiers = [
 # it the Skills surface is non-functional after a bare install.
 dependencies = [
     "scitex-dev>=0.11.7",
+    "scitex-logging>=0.1.0",
 ]
 
 [project.optional-dependencies]
-# No graceful-degradation features — package is pure-stdlib. The key
-# is kept empty for ecosystem-policy symmetry (the audit expects
-# exactly default + [all] + [dev]).
-all = []
+# Pure-stdlib package with no runtime extras; [all] maps to [dev]
+# so `pip install scitex-dict[all]` stays functional (PS-214/215).
+all = [
+    "scitex-dict[dev]",
+]
 
 dev = [
     "pytest>=7.0",
@@ -86,6 +88,13 @@ packages = ["src/scitex_dict"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+markers = [
+    "smoke: fast CLI happy-path tests (<60s, runs on every PR)",
+    "e2e: end-to-end workflows against real subsystems (mandatory on every PR)",
+]
+
+[tool.scitex_dev]
+no_cli = true
 
 [tool.coverage.run]
 parallel = true
