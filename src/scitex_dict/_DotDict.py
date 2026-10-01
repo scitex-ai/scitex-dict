@@ -6,6 +6,10 @@
 import json
 import pprint as _pprint
 
+import scitex_logging as slogging
+
+log = slogging.getLogger(__name__)
+
 
 class DotDict:
     """
@@ -366,15 +370,15 @@ if __name__ == "__main__":
     dd = DotDict(data)
 
     # Access via attribute (for valid identifiers)
-    print(f"dd.name: {dd.name}")
-    print(f"dd.version: {dd.version}")
-    print(f"dd.nested.value1: {dd.nested.value1}")
+    log.info(f"dd.name: {dd.name}")
+    log.info(f"dd.version: {dd.version}")
+    log.info(f"dd.nested.value1: {dd.nested.value1}")
     # print(dd.100)  # This would be a SyntaxError, as expected
 
     # Access via item (for any key)
-    print(f"dd[100]: {dd[100]}")
-    print(f"dd['nested'][200]: {dd['nested'][200]}")
-    print(f"dd['invalid-key']: {dd['invalid-key']}")
+    log.info(f"dd[100]: {dd[100]}")
+    log.info(f"dd['nested'][200]: {dd['nested'][200]}")
+    log.info(f"dd['invalid-key']: {dd['invalid-key']}")
 
     # Modify values
     dd.name = "updated example"
@@ -383,41 +387,41 @@ if __name__ == "__main__":
     dd[300] = "new top-level int key"  # Add new int key
     dd["new-key"] = "another invalid id key"
 
-    print("\n--- After Modifications ---")
-    print(f"dd.name: {dd.name}")
-    print(f"dd[100]: {dd[100]}")
-    print(f"dd.nested[200]: {dd.nested[200]}")
-    print(f"dd[300]: {dd[300]}")
-    print(f"dd['new-key']: {dd['new-key']}")
+    log.info("\n--- After Modifications ---")
+    log.info(f"dd.name: {dd.name}")
+    log.info(f"dd[100]: {dd[100]}")
+    log.info(f"dd.nested[200]: {dd.nested[200]}")
+    log.info(f"dd[300]: {dd[300]}")
+    log.info(f"dd['new-key']: {dd['new-key']}")
 
-    print("\n--- Representation ---")
-    print(f"repr(dd): {repr(dd)}")
+    log.info("\n--- Representation ---")
+    log.info(f"repr(dd): {repr(dd)}")
 
-    print("\n--- String (JSON) Representation ---")
-    print(f"str(dd):\n{str(dd)}")
+    log.info("\n--- String (JSON) Representation ---")
+    log.info(f"str(dd):\n{str(dd)}")
 
-    print("\n--- Convert back to dict ---")
+    log.info("\n--- Convert back to dict ---")
     plain_dict = dd.to_dict()
-    print(f"plain_dict: {plain_dict}")
-    print(f"plain_dict[100]: {plain_dict[100]}")
-    print(f"plain_dict['nested'][200]: {plain_dict['nested'][200]}")
+    log.info(f"plain_dict: {plain_dict}")
+    log.info(f"plain_dict[100]: {plain_dict[100]}")
+    log.info(f"plain_dict['nested'][200]: {plain_dict['nested'][200]}")
 
-    print("\n--- Iteration ---")
+    log.info("\n--- Iteration ---")
     for k in dd:
-        print(f"Key: {k}, Value: {dd[k]}")
+        log.info(f"Key: {k}, Value: {dd[k]}")
 
-    print("\n--- Contains ---")
-    print(f"100 in dd: {100 in dd}")
-    print(f"'name' in dd: {'name' in dd}")
-    print(f"999 in dd: {999 in dd}")
+    log.info("\n--- Contains ---")
+    log.info(f"100 in dd: {100 in dd}")
+    log.info(f"'name' in dd: {'name' in dd}")
+    log.info(f"999 in dd: {999 in dd}")
 
-    print("\n--- Copy ---")
+    log.info("\n--- Copy ---")
     dd_copy = dd.copy()
     dd_copy[100] = "value in copy"
     dd_copy.name = "name in copy"
-    print(f"Original dd[100]: {dd[100]}")
-    print(f"Copy dd_copy[100]: {dd_copy[100]}")
-    print(f"Original dd.name: {dd.name}")
-    print(f"Copy dd_copy.name: {dd_copy.name}")
+    log.info(f"Original dd[100]: {dd[100]}")
+    log.info(f"Copy dd_copy[100]: {dd_copy[100]}")
+    log.info(f"Original dd.name: {dd.name}")
+    log.info(f"Copy dd_copy.name: {dd_copy.name}")
 
 # EOF
