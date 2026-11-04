@@ -51,4 +51,6 @@ rule and empirical verification table.
 - [10_quick-start.md](10_quick-start.md) — legacy quick-start (kept for context)
 - [11_python-api.md](11_python-api.md) — legacy API notes (kept for context)
 
-No CLI, no MCP tools.
+No CLI, no MCP tools. The installed `scitex.cli` declaration is
+`dict = "none"`: it declines CLI mounting only, while Python imports and
+the separate documentation/skills providers remain available.
