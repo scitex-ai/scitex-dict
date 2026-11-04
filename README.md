@@ -34,6 +34,12 @@
 | 1 | **YAML config access ergonomics** — `CONFIG["MODEL"]["hidden_size"]` vs `CONFIG.MODEL.hidden_size` matters in a notebook | **`DotDict`** — attribute-access `dict` subclass with recursive `.x.y.z`; works as a drop-in for the umpteen competing alternatives (addict, easydict, box, dotmap) |
 | 2 | **Overwrites** — merges lose info on dup keys. | **`safe_merge`** — duplicate keys raise; `flatten` turns nested dicts into dotted-key single-level for logging/CSV |
 
+This is a Python library, not a command-line application. Its installed
+`scitex.cli` declaration explicitly declines the `dict` CLI name (`none`).
+Python imports and the separate documentation/skills providers remain
+available; this CLI-only decision does not disable them or declare MCP/Web
+capabilities.
+
 ## Quick Start
 
 ```python
