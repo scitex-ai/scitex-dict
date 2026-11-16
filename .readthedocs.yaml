@@ -7,6 +7,14 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.11"
+  jobs:
+    # The sphinx toolchain is the PEP 735 `docs` dependency group in
+    # pyproject.toml (the single source; CI installs the same group).
+    # RTD's `python.install` cannot install a group, so install it here;
+    # `pip install --group` needs pip >= 25.1.
+    post_install:
+      - python -m pip install --upgrade "pip>=25.1"
+      - python -m pip install -e . --group docs
 
 sphinx:
   configuration: docs/sphinx/conf.py
@@ -14,9 +22,3 @@ sphinx:
 
 # Disable PDF/ePub to avoid multi-file output errors
 formats: []
-
-python:
-  install:
-    - requirements: docs/sphinx/requirements.txt
-    - method: pip
-      path: .
